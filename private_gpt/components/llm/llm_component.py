@@ -23,10 +23,7 @@ class LLMComponent:
             case "local":
                 from llama_index.llms import LlamaCPP
 
-                prompt_style_cls = get_prompt_style(settings.local.prompt_style)
-                prompt_style = prompt_style_cls(
-                    default_system_prompt=settings.local.default_system_prompt
-                )
+                prompt_style = get_prompt_style(settings.local.prompt_style)
 
                 self.llm = LlamaCPP(
                     model_path=str(models_path / settings.local.llm_hf_model_file),
@@ -53,7 +50,9 @@ class LLMComponent:
             case "openai":
                 from llama_index.llms import OpenAI
 
-                openai_settings = settings.openai.api_key
-                self.llm = OpenAI(api_key=openai_settings)
+                openai_settings = settings.openai
+                self.llm = OpenAI(
+                    api_key=openai_settings.api_key, model=openai_settings.model
+                )
             case "mock":
                 self.llm = MockLLM()
