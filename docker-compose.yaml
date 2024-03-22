@@ -1,13 +1,13 @@
 services:
   private-gpt:
     build:
-      dockerfile: Dockerfile.local
+      dockerfile: Dockerfile
     volumes:
       - ./local_data/:/home/worker/app/local_data
       - ./models/:/home/worker/app/models
     ports:
-      - 8001:8080
+      - 80:80
     environment:
-      PORT: 8080
+      PORT: 80
       PGPT_PROFILES: docker
-      PGPT_MODE: llamacpp
+      PGPT_MODE: ollama
