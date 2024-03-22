@@ -81,7 +81,9 @@ class DataSettings(BaseModel):
 
 
 class LLMSettings(BaseModel):
-    mode: Literal["local", "openai", "openailike", "sagemaker", "mock", "ollama"]
+    mode: Literal[
+        "llamacpp", "openai", "openailike", "azopenai", "sagemaker", "mock", "ollama"
+    ]
     max_new_tokens: int = Field(
         256,
         description="The maximum number of token that the LLM is authorized to generate in one completion.",
@@ -98,18 +100,23 @@ class LLMSettings(BaseModel):
         "like `HuggingFaceH4/zephyr-7b-beta`. If not set, will load a tokenizer matching "
         "gpt-3.5-turbo LLM.",
     )
+    temperature: float = Field(
+        0.1,
+        description="The temperature of the model. Increasing the temperature will make the model answer more creatively. A value of 0.1 would be more factual.",
+    )
 
 
 class VectorstoreSettings(BaseModel):
-    database: Literal["chroma", "qdrant"]
+    database: Literal["chroma", "qdrant", "postgres"]
 
 
-class LocalSettings(BaseModel):
+class NodeStoreSettings(BaseModel):
+    database: Literal["simple", "postgres"]
+
+
+class LlamaCPPSettings(BaseModel):
     llm_hf_repo_id: str
     llm_hf_model_file: str
-    embedding_hf_model_name: str = Field(
-        description="Name of the HuggingFace model to use for embeddings"
-    )
     prompt_style: Literal["default", "llama2", "tag", "mistral", "chatml"] = Field(
         "llama2",
         description=(
@@ -122,16 +129,40 @@ class LocalSettings(BaseModel):
         ),
     )
 
+    tfs_z: float = Field(
+        1.0,
+        description="Tail free sampling is used to reduce the impact of less probable tokens from the output. A higher value (e.g., 2.0) will reduce the impact more, while a value of 1.0 disables this setting.",
+    )
+    top_k: int = Field(
+        40,
+        description="Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative. (Default: 40)",
+    )
+    top_p: float = Field(
+        0.9,
+        description="Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 0.9)",
+    )
+    repeat_penalty: float = Field(
+        1.1,
+        description="Sets how strongly to penalize repetitions. A higher value (e.g., 1.5) will penalize repetitions more strongly, while a lower value (e.g., 0.9) will be more lenient. (Default: 1.1)",
+    )
+
+
+class HuggingFaceSettings(BaseModel):
+    embedding_hf_model_name: str = Field(
+        description="Name of the HuggingFace model to use for embeddings"
+    )
+
 
 class EmbeddingSettings(BaseModel):
-    mode: Literal["local", "openai", "sagemaker", "mock"]
-    ingest_mode: Literal["simple", "batch", "parallel"] = Field(
+    mode: Literal["huggingface", "openai", "azopenai", "sagemaker", "ollama", "mock"]
+    ingest_mode: Literal["simple", "batch", "parallel", "pipeline"] = Field(
         "simple",
         description=(
             "The ingest mode to use for the embedding engine:\n"
             "If `simple` - ingest files sequentially and one by one. It is the historic behaviour.\n"
             "If `batch` - if multiple files, parse all the files in parallel, "
             "and send them in batch to the embedding model.\n"
+            "In `pipeline` - The Embedding engine is kept as busy as possible\n"
             "If `parallel` - parse the files in parallel using multiple cores, and embedd them in parallel.\n"
             "`parallel` is the fastest mode for local setup, as it parallelize IO RW in the index.\n"
             "For modes that leverage parallelization, you can specify the number of "
@@ -144,10 +175,15 @@ class EmbeddingSettings(BaseModel):
             "The number of workers to use for file ingestion.\n"
             "In `batch` mode, this is the number of workers used to parse the files.\n"
             "In `parallel` mode, this is the number of workers used to parse the files and embed them.\n"
+            "In `pipeline` mode, this is the number of workers that can perform embeddings.\n"
             "This is only used if `ingest_mode` is not `simple`.\n"
             "Do not go too high with this number, as it might cause memory issues. (especially in `parallel` mode)\n"
             "Do not set it higher than your number of threads of your CPU."
         ),
+    )
+    embed_dim: int = Field(
+        384,
+        description="The dimension of the embeddings stored in the Postgres database",
     )
 
 
@@ -173,9 +209,60 @@ class OllamaSettings(BaseModel):
         "http://localhost:11434",
         description="Base URL of Ollama API. Example: 'https://localhost:11434'.",
     )
-    model: str = Field(
+    llm_model: str = Field(
         None,
         description="Model to use. Example: 'llama2-uncensored'.",
+    )
+    embedding_model: str = Field(
+        None,
+        description="Model to use. Example: 'nomic-embed-text'.",
+    )
+    tfs_z: float = Field(
+        1.0,
+        description="Tail free sampling is used to reduce the impact of less probable tokens from the output. A higher value (e.g., 2.0) will reduce the impact more, while a value of 1.0 disables this setting.",
+    )
+    num_predict: int = Field(
+        None,
+        description="Maximum number of tokens to predict when generating text. (Default: 128, -1 = infinite generation, -2 = fill context)",
+    )
+    top_k: int = Field(
+        40,
+        description="Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative. (Default: 40)",
+    )
+    top_p: float = Field(
+        0.9,
+        description="Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 0.9)",
+    )
+    repeat_last_n: int = Field(
+        64,
+        description="Sets how far back for the model to look back to prevent repetition. (Default: 64, 0 = disabled, -1 = num_ctx)",
+    )
+    repeat_penalty: float = Field(
+        1.1,
+        description="Sets how strongly to penalize repetitions. A higher value (e.g., 1.5) will penalize repetitions more strongly, while a lower value (e.g., 0.9) will be more lenient. (Default: 1.1)",
+    )
+    request_timeout: float = Field(
+        120.0,
+        description="Time elapsed until ollama times out the request. Default is 120s. Format is float. ",
+    )
+
+
+class AzureOpenAISettings(BaseModel):
+    api_key: str
+    azure_endpoint: str
+    api_version: str = Field(
+        "2023_05_15",
+        description="The API version to use for this operation. This follows the YYYY-MM-DD format.",
+    )
+    embedding_deployment_name: str
+    embedding_model: str = Field(
+        "text-embedding-ada-002",
+        description="OpenAI Model to use. Example: 'text-embedding-ada-002'.",
+    )
+    llm_deployment_name: str
+    llm_model: str = Field(
+        "gpt-35-turbo",
+        description="OpenAI Model to use. Example: 'gpt-4'.",
     )
 
 
@@ -188,6 +275,50 @@ class UISettings(BaseModel):
     )
     default_query_system_prompt: str = Field(
         None, description="The default system prompt to use for the query mode."
+    )
+    delete_file_button_enabled: bool = Field(
+        True, description="If the button to delete a file is enabled or not."
+    )
+    delete_all_files_button_enabled: bool = Field(
+        False, description="If the button to delete all files is enabled or not."
+    )
+
+
+class RagSettings(BaseModel):
+    similarity_top_k: int = Field(
+        2,
+        description="This value controls the number of documents returned by the RAG pipeline",
+    )
+    similarity_value: float = Field(
+        None,
+        description="If set, any documents retrieved from the RAG must meet a certain match score. Acceptable values are between 0 and 1.",
+    )
+
+
+class PostgresSettings(BaseModel):
+    host: str = Field(
+        "localhost",
+        description="The server hosting the Postgres database",
+    )
+    port: int = Field(
+        5432,
+        description="The port on which the Postgres database is accessible",
+    )
+    user: str = Field(
+        "postgres",
+        description="The user to use to connect to the Postgres database",
+    )
+    password: str = Field(
+        "postgres",
+        description="The password to use to connect to the Postgres database",
+    )
+    database: str = Field(
+        "postgres",
+        description="The database to use to connect to the Postgres database",
+    )
+    schema_name: str = Field(
+        "public",
+        description="The name of the schema in the Postgres database to use",
     )
 
 
@@ -251,12 +382,17 @@ class Settings(BaseModel):
     ui: UISettings
     llm: LLMSettings
     embedding: EmbeddingSettings
-    local: LocalSettings
+    llamacpp: LlamaCPPSettings
+    huggingface: HuggingFaceSettings
     sagemaker: SagemakerSettings
     openai: OpenAISettings
     ollama: OllamaSettings
+    azopenai: AzureOpenAISettings
     vectorstore: VectorstoreSettings
+    nodestore: NodeStoreSettings
+    rag: RagSettings
     qdrant: QdrantSettings | None = None
+    postgres: PostgresSettings | None = None
 
 
 """
