@@ -16,30 +16,50 @@ ENV PATH=".venv/bin/:$PATH"
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 
 FROM base as dependencies
-WORKDIR /home/worker/app
+WORKDIR /home/nonroot/app
 COPY pyproject.toml poetry.lock ./
 
-RUN poetry install --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant"
+RUN poetry install --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant" && \
+    poetry run python scripts/setup && \
+    rm -rf \
+        .git* \
+        .docker* \
+        docker* \
+        Dockerfile* \
+        local_data/.gitignore \
+        models/cache/models--* \
+        models/embedding/* \
+        models/mistral* \
+        settings-* \
+        tests*
 
 FROM base as app
 
-ENV PYTHONUNBUFFERED=1
-ENV PORT=8080
+LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
+LABEL description="Docker container for privateGPT - a production-ready AI project that allows you to ask questions about your documents using the power of Large Language Models (LLMs)."
+
+#ARG CMAKE_ARGS='-DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR="OpenBLAS" -DLLAMA_AVX=OFF -DLLAMA_AVX2=OFF -DLLAMA_F16C=OFF -DLLAMA_FMA=OFF'
+ARG CMAKE_ARGS='-DLLAMA_CUBLAS=ON'
+
+ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
+    HF_HOME="/home/nonroot/app/models/cache" \
+    PYTHONUNBUFFERED=1 \
+    PORT=8080
 EXPOSE 8080
 
 # Prepare a non-root user
-RUN adduser --system worker
-WORKDIR /home/worker/app
+RUN adduser --system nonroot
+WORKDIR /home/nonroot/app
 
-RUN mkdir local_data; chown worker local_data
-RUN mkdir models; chown worker models
-COPY --chown=worker --from=dependencies /home/worker/app/.venv/ .venv
-COPY --chown=worker private_gpt/ private_gpt
-COPY --chown=worker fern/ fern
-COPY --chown=worker *.yaml *.md ./
-COPY --chown=worker scripts/ scripts
+RUN mkdir local_data; chown nonroot local_data
+RUN mkdir models; chown nonroot models
+COPY --chown=nonroot --from=dependencies /home/nonroot/app/.venv/ .venv
+COPY --chown=nonroot private_gpt/ private_gpt
+COPY --chown=nonroot fern/ fern
+COPY --chown=nonroot *.yaml *.md ./
+COPY --chown=nonroot scripts/ scripts
 
 ENV PYTHONPATH="$PYTHONPATH:/private_gpt/"
 
-USER worker
+USER nonroot
 ENTRYPOINT python -m private_gpt
