@@ -21,8 +21,7 @@ COPY pyproject.toml poetry.lock ./
 # Make sure you update Python version in path
 COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
 
-RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant" && \
-    poetry run python3 scripts/setup 
+RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant" 
     #&& \
     #rm -rf \
     #    .git* \
@@ -53,25 +52,20 @@ USER nonroot:nonroot
 WORKDIR /home/worker/app
 
 # Copy from dependencies
-RUN mkdir local_data; chown nonroot local_data
-RUN mkdir models; chown nonroot models
-#RUN mkdir -p local_data models/cache .config/matplotlib && \
-    #chown -R nonroot:nogroup /home/nonroot/app 
+RUN mkdir -p local_data models/cache .config/matplotlib && \
+    chown -R nonroot /home/nonroot/app 
     #&& \
     #pip install doc2text docx2txt EbookLib html2text python-pptx Pillow 
     #&& \
     #FORCE_CMAKE=1 CMAKE_ARGS="${CMAKE_ARGS}" \
     #/home/nonroot/app/.venv/bin/pip install --force-reinstall --no-cache-dir llama-cpp-python
-COPY --chown=nonroot --from=dependencies /home/nonroot/app/ ./
-#COPY --chown=nonroot --from=dependencies /home/nonroot/app/.venv/ .venv
+COPY --chown=nonroot --from=dependencies /home/nonroot/app/.venv .venv
 COPY --chown=nonroot private_gpt/ private_gpt
 COPY --chown=nonroot fern/ fern
 COPY --chown=nonroot *.yaml *.md ./
 COPY --chown=nonroot scripts/ scripts
 
-WORKDIR /home/nonroot/app
-
-
+RUN poetry run python3 scripts/setup 
 
 # Store versions in /VERSION
 #RUN touch /VERSION && \
