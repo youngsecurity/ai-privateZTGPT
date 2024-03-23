@@ -1,4 +1,5 @@
-FROM python:3.11.6-slim-bookworm as base
+#FROM python:3.11.6-slim-bookworm as base
+FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev AS base
 
 # Install poetry
 RUN pip install pipx
