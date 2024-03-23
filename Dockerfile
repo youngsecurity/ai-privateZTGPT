@@ -1,9 +1,6 @@
 #FROM python:3.11.6-slim-bookworm as base
 FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev as base
 
-# Make sure you update Python version in path
-#COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
-
 # Install poetry
 RUN pip3 install pipx
 RUN pipx --version
@@ -21,6 +18,9 @@ FROM base as dependencies
 
 WORKDIR /home/nonroot/app
 COPY pyproject.toml poetry.lock ./
+
+# Make sure you update Python version in path
+COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
 
 RUN poetry install --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant" && \
     poetry run python scripts/setup && \
