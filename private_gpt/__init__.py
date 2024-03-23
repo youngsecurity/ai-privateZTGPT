@@ -1,4 +1,4 @@
-"""private-gpt."""
+"""private-zero-trust-gpt."""
 
 import logging
 import os
