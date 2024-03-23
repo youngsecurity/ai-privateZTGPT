@@ -36,7 +36,8 @@ RUN poetry install --extras "ui llms-ollama embeddings-ollama vector-stores-qdra
         tests*
 
 # App-Stage
-#FROM base as app
+FROM base as app
+
 LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
 LABEL description="Docker container for privateGPT - a production-ready AI project that allows you to ask questions about your documents using the power of Large Language Models (LLMs)."
 
@@ -45,8 +46,7 @@ ARG CMAKE_ARGS='-DLLAMA_CUBLAS=ON'
 
 ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
     HF_HOME="/home/nonroot/app/models/cache" \
-    PYTHONUNBUFFERED=1 \
-    PORT=8080
+    PYTHONUNBUFFERED=1
 EXPOSE 8080
 
 # Prepare a non-root user
@@ -102,7 +102,7 @@ ENV PYTHONPATH="$PYTHONPATH:/private_gpt/" \
     UI_DEFAULT_QUERY_SYSTEM_PROMPT="You can only answer questions about the provided context. If you know the answer but it is not based in the provided context, don't provide the answer, just state the answer is not in the context provided." \
     UI_DELETE_FILE_BUTTON_ENABLED="true" \
     UI_DELETE_ALL_FILES_BUTTON_ENABLED="true" \
-    LLM_MODE="llamacpp" \
+    LLM_MODE="ollama" \
     LLM_MAX_NEW_TOKENS="256" \
     LLM_CONTEXT_WINDOW="3900" \
     LLM_TOKENIZER="mistralai/Mistral-7B-Instruct-v0.2" \
@@ -118,7 +118,7 @@ ENV PYTHONPATH="$PYTHONPATH:/private_gpt/" \
     EMBEDDING_INGEST_MODE="simple" \
     EMBEDDING_COUNT_WORKERS="2" \
     EMBEDDING_EMBED_DIM="384" \
-    HUGGINGFACE_EMBEDDING_HF_MODEL_NAME="BAAI/bge-small-en-v1.5" \
+    #HUGGINGFACE_EMBEDDING_HF_MODEL_NAME="BAAI/bge-small-en-v1.5" \
     VECTORSTORE_DATABASE="qdrant" \
     QDRANT_PATH="local_data/private_gpt/qdrant" \
     POSTGRES_HOST="localhost" \
@@ -132,9 +132,9 @@ ENV PYTHONPATH="$PYTHONPATH:/private_gpt/" \
     OPENAI_API_BASE="https://api.openai.com/v1" \
     OPENAI_API_KEY="sk-1234" \
     OPENAI_MODEL="gpt-3.5-turbo" \
-    OLLAMA_API_BASE="http://localhost:11434" \
-    OLLAMA_LLM_MODEL="mistral:latest" \
-    OLLAMA_EMBEDDING_MODEL="" \
+    OLLAMA_API_BASE="http://ollama:11434" \
+    OLLAMA_LLM_MODEL="Openchat:7b-V3.5-Q8_0" \
+    OLLAMA_EMBEDDING_MODEL="nomic-embed-text" \
     OLLAMA_TFS_Z="1.0" \
     OLLAMA_NUM_PREDICT="128" \
     OLLAMA_TOP_K="40" \
