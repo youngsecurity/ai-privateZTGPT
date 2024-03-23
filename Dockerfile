@@ -1,6 +1,19 @@
 #FROM python:3.11.6-slim-bookworm as base
 FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev AS base
 
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt --user
+
+FROM cgr.dev/chainguard/python:latest
+
+WORKDIR /app
+
+# Make sure you update Python version in path
+COPY --from=builder /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
+
 # Install poetry
 RUN pip install pipx
 RUN python3 -m pipx ensurepath
