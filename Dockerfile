@@ -21,19 +21,7 @@ COPY pyproject.toml poetry.lock ./
 # Make sure you update Python version in path
 COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
 
-RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant" 
-    #&& \
-    #rm -rf \
-    #    .git* \
-    #    .docker* \
-    #    docker* \
-    #    Dockerfile* \
-    #    local_data/.gitignore \
-    #    models/cache/models--* \
-    #    models/embedding/* \
-    #    models/mistral* \
-    #    settings-* \
-    #    tests*
+RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama embeddings-huggingface vector-stores-qdrant" 
 
 # App-Stage
 FROM base as app
