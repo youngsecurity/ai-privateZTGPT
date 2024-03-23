@@ -35,18 +35,19 @@ RUN mkdir -p local_data models/cache .config/matplotlib && \
     #/home/nonroot/app/.venv/bin/pip install --force-reinstall --no-cache-dir llama-cpp-python
 
 RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant" && \
-    poetry run python3 scripts/setup && \
-    rm -rf \
-        .git* \
-        .docker* \
-        docker* \
-        Dockerfile* \
-        local_data/.gitignore \
-        models/cache/models--* \
-        models/embedding/* \
-        models/mistral* \
-        settings-* \
-        tests*
+    poetry run python3 scripts/setup 
+    #&& \
+    #rm -rf \
+    #    .git* \
+    #    .docker* \
+    #    docker* \
+    #    Dockerfile* \
+    #    local_data/.gitignore \
+    #    models/cache/models--* \
+    #    models/embedding/* \
+    #    models/mistral* \
+    #    settings-* \
+    #    tests*
 
 # App-Stage
 FROM base as app
