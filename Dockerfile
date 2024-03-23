@@ -16,6 +16,7 @@ COPY --from=builder /home/nonroot/.local/lib/python3.12/site-packages /home/nonr
 
 # Install poetry
 RUN pip install pipx
+RUN pipx --version
 RUN python3 -m pipx ensurepath
 RUN pipx install poetry
 ENV PATH="/root/.local/bin:$PATH"
