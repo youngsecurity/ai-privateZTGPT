@@ -18,38 +18,6 @@ COPY pyproject.toml poetry.lock ./
 # Make sure you update Python version in path
 COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
 
-RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant" && \
-    poetry run python scripts/setup && \
-    rm -rf \
-        .git* \
-        .docker* \
-        docker* \
-        Dockerfile* \
-        local_data/.gitignore \
-        models/cache/models--* \
-        models/embedding/* \
-        models/mistral* \
-        settings-* \
-        tests*
-
-# App-Stage
-FROM base as app
-
-LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
-LABEL description="Docker container for privateGPT - a production-ready AI project that allows you to ask questions about your documents using the power of Large Language Models (LLMs)."
-
-#ARG CMAKE_ARGS='-DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR="OpenBLAS" -DLLAMA_AVX=OFF -DLLAMA_AVX2=OFF -DLLAMA_F16C=OFF -DLLAMA_FMA=OFF'
-ARG CMAKE_ARGS='-DLLAMA_CUBLAS=ON'
-
-ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
-    HF_HOME="/home/nonroot/app/models/cache" \
-    PYTHONUNBUFFERED=1
-EXPOSE 8080
-
-# Prepare a non-root user
-#RUN adduser --system nonroot
-WORKDIR /home/nonroot/app
-
 # Copy from dependencies
 COPY --chown=nonroot --from=dependencies /home/nonroot/app/ ./
 #COPY --chown=nonroot --from=dependencies /home/nonroot/app/.venv/ .venv
@@ -65,6 +33,35 @@ RUN mkdir -p local_data models/cache .config/matplotlib && \
     #&& \
     #FORCE_CMAKE=1 CMAKE_ARGS="${CMAKE_ARGS}" \
     #/home/nonroot/app/.venv/bin/pip install --force-reinstall --no-cache-dir llama-cpp-python
+
+RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant" && \
+    poetry run python3 scripts/setup && \
+    rm -rf \
+        .git* \
+        .docker* \
+        docker* \
+        Dockerfile* \
+        local_data/.gitignore \
+        models/cache/models--* \
+        models/embedding/* \
+        models/mistral* \
+        settings-* \
+        tests*
+
+# App-Stage
+FROM base as app
+
+WORKDIR /home/nonroot/app
+LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
+LABEL description="Docker container for privateGPT - a production-ready AI project that allows you to ask questions about your documents using the power of Large Language Models (LLMs)."
+
+#ARG CMAKE_ARGS='-DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR="OpenBLAS" -DLLAMA_AVX=OFF -DLLAMA_AVX2=OFF -DLLAMA_F16C=OFF -DLLAMA_FMA=OFF'
+ARG CMAKE_ARGS='-DLLAMA_CUBLAS=ON'
+
+ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
+    HF_HOME="/home/nonroot/app/models/cache" \
+    PYTHONUNBUFFERED=1
+EXPOSE 8080
 
 # Store versions in /VERSION
 #RUN touch /VERSION && \
