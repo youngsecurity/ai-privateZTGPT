@@ -40,8 +40,8 @@ RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-s
 FROM base as app
 
 # Copy from dependencies
-RUN mkdir local_data; chown worker local_data
-RUN mkdir models; chown worker models
+RUN mkdir local_data; chown nonroot local_data
+RUN mkdir models; chown nonroot models
 #RUN mkdir -p local_data models/cache .config/matplotlib && \
     #chown -R nonroot:nogroup /home/nonroot/app 
     #&& \
