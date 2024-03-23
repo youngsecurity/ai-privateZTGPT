@@ -6,7 +6,7 @@ FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev as base
 
 # Install poetry
 RUN pip install pipx
-RUN pipx --version
+#RUN pipx --version
 RUN python3 -m pipx ensurepath
 RUN pipx install poetry
 ENV PATH="/home/nonroot/.local/bin:$PATH"
