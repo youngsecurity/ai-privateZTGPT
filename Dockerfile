@@ -1,6 +1,5 @@
 #FROM python:3.11.6-slim-bookworm as base
-FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev 
-#AS base
+FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev as base
 
 # Make sure you update Python version in path
 COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
@@ -17,7 +16,7 @@ ENV PATH=".venv/bin/:$PATH"
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 
 # Dependencies-Stage
-#FROM base as dependencies
+FROM base as dependencies
 
 WORKDIR /home/nonroot/app
 COPY pyproject.toml poetry.lock ./
