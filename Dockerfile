@@ -1,6 +1,9 @@
 #FROM python:3.11.6-slim-bookworm as base
 FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev as base
 
+LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
+LABEL description="Docker container for privateGPT - a production-ready AI project that allows you to ask questions about your documents using the power of Large Language Models (LLMs)."
+
 # Install poetry
 RUN pip install --upgrade poetry
 ENV PATH="/home/nonroot/.local/bin:$PATH"
@@ -17,14 +20,6 @@ COPY pyproject.toml poetry.lock ./
 
 # Make sure you update Python version in path
 COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
-
-# Copy from dependencies
-COPY --chown=nonroot --from=dependencies /home/nonroot/app/ ./
-#COPY --chown=nonroot --from=dependencies /home/nonroot/app/.venv/ .venv
-COPY --chown=nonroot private_gpt/ private_gpt
-COPY --chown=nonroot fern/ fern
-COPY --chown=nonroot *.yaml *.md ./
-COPY --chown=nonroot scripts/ scripts
 
 RUN mkdir -p local_data models/cache .config/matplotlib && \
     chown -R nonroot:nogroup /home/nonroot/app 
@@ -52,9 +47,15 @@ RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-s
 # App-Stage
 FROM base as app
 
+# Copy from dependencies
+COPY --chown=nonroot --from=dependencies /home/nonroot/app/ ./
+#COPY --chown=nonroot --from=dependencies /home/nonroot/app/.venv/ .venv
+COPY --chown=nonroot private_gpt/ private_gpt
+COPY --chown=nonroot fern/ fern
+COPY --chown=nonroot *.yaml *.md ./
+COPY --chown=nonroot scripts/ scripts
+
 WORKDIR /home/nonroot/app
-LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
-LABEL description="Docker container for privateGPT - a production-ready AI project that allows you to ask questions about your documents using the power of Large Language Models (LLMs)."
 
 #ARG CMAKE_ARGS='-DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR="OpenBLAS" -DLLAMA_AVX=OFF -DLLAMA_AVX2=OFF -DLLAMA_F16C=OFF -DLLAMA_FMA=OFF'
 ARG CMAKE_ARGS='-DLLAMA_CUBLAS=ON'
