@@ -5,9 +5,9 @@ LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
 LABEL description="Docker container for privateGPT - a production-ready AI project that allows you to ask questions about your documents using the power of Large Language Models (LLMs)."
 
 # Install poetry
-RUN pip install --upgrade poetry
 ENV PATH="/home/nonroot/.local/bin:$PATH"
 ENV PATH=".venv/bin/:$PATH"
+RUN pip install --upgrade poetry
 
 # https://python-poetry.org/docs/configuration/#virtualenvsin-project
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
@@ -39,15 +39,16 @@ RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-s
 # App-Stage
 FROM base as app
 
-RUN mkdir -p local_data models/cache .config/matplotlib && \
-    chown -R nonroot:nogroup /home/nonroot/app 
+# Copy from dependencies
+RUN mkdir local_data; chown worker local_data
+RUN mkdir models; chown worker models
+#RUN mkdir -p local_data models/cache .config/matplotlib && \
+    #chown -R nonroot:nogroup /home/nonroot/app 
     #&& \
     #pip install doc2text docx2txt EbookLib html2text python-pptx Pillow 
     #&& \
     #FORCE_CMAKE=1 CMAKE_ARGS="${CMAKE_ARGS}" \
     #/home/nonroot/app/.venv/bin/pip install --force-reinstall --no-cache-dir llama-cpp-python
-
-# Copy from dependencies
 COPY --chown=nonroot --from=dependencies /home/nonroot/app/ ./
 #COPY --chown=nonroot --from=dependencies /home/nonroot/app/.venv/ .venv
 COPY --chown=nonroot private_gpt/ private_gpt
