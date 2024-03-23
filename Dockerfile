@@ -15,7 +15,7 @@ ENV PATH=".venv/bin/:$PATH"
 # https://python-poetry.org/docs/configuration/#virtualenvsin-project
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 
-FROM base as dependencies
+FROM base AS dependencies
 
 WORKDIR /home/nonroot/app
 COPY pyproject.toml poetry.lock ./
@@ -34,7 +34,7 @@ RUN poetry install --extras "ui llms-ollama embeddings-ollama vector-stores-qdra
         settings-* \
         tests*
 
-FROM base as app
+FROM base AS app
 
 LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
 LABEL description="Docker container for privateGPT - a production-ready AI project that allows you to ask questions about your documents using the power of Large Language Models (LLMs)."
@@ -61,19 +61,20 @@ COPY --chown=nonroot *.yaml *.md ./
 COPY --chown=nonroot scripts/ scripts
 
 RUN mkdir -p local_data models/cache .config/matplotlib && \
-    chown -R nonroot:nogroup /home/nonroot/app && \
-    pip install doc2text docx2txt EbookLib html2text python-pptx Pillow 
+    chown -R nonroot:nogroup /home/nonroot/app 
+    #&& \
+    #pip install doc2text docx2txt EbookLib html2text python-pptx Pillow 
     #&& \
     #FORCE_CMAKE=1 CMAKE_ARGS="${CMAKE_ARGS}" \
     #/home/nonroot/app/.venv/bin/pip install --force-reinstall --no-cache-dir llama-cpp-python
 
 # Store versions in /VERSION
-RUN touch /VERSION && \
-    echo "debian=$(cat /etc/issue | cut -d' ' -f3)" > /VERSION && \
-    echo "python=$(/home/nonroot/app/.venv/bin/python3 --version | cut -d' ' -f2)" >> /VERSION && \
-    echo "pip=$(/home/nonroot/app/.venv/bin/pip3 --version| cut -d' ' -f2)" >> /VERSION && \
-    echo "llama-cpp-python=$(/home/nonroot/app/.venv/bin/pip3 freeze | grep llama_cpp_python | cut -d= -f3)" >> /VERSION && \
-    echo "privategpt=$(cat /home/nonroot/app/version.txt)" >> /VERSION
+#RUN touch /VERSION && \
+#    echo "debian=$(cat /etc/issue | cut -d' ' -f3)" > /VERSION && \
+#    echo "python=$(/home/nonroot/app/.venv/bin/python3 --version | cut -d' ' -f2)" >> /VERSION && \
+#    echo "pip=$(/home/nonroot/app/.venv/bin/pip3 --version| cut -d' ' -f2)" >> /VERSION && \
+    #echo "llama-cpp-python=$(/home/nonroot/app/.venv/bin/pip3 freeze | grep llama_cpp_python | cut -d= -f3)" >> /VERSION && \
+#    echo "privategpt=$(cat /home/nonroot/app/version.txt)" >> /VERSION
 
 # Setup environment
 ENV PYTHONPATH="$PYTHONPATH:/private_gpt/" \
@@ -154,7 +155,6 @@ VOLUME /home/nonroot/app/models
 # Setup entrypoint
 COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
-
 
 USER nonroot
 #ENTRYPOINT python -m private_gpt
