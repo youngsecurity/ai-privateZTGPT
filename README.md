@@ -1,15 +1,14 @@
-# 🔒 PrivateGPT 📑
+# 🔒 Private Zero Trust GPT 📑
 
 [![Tests](https://github.com/imartinez/privateGPT/actions/workflows/tests.yml/badge.svg)](https://github.com/imartinez/privateGPT/actions/workflows/tests.yml?query=branch%3Amain)
-[![Website](https://img.shields.io/website?up_message=check%20it&down_message=down&url=https%3A%2F%2Fdocs.privategpt.dev%2F&label=Documentation)](https://docs.privategpt.dev/)
-
-[![Discord](https://img.shields.io/discord/1164200432894234644?logo=discord&label=PrivateGPT)](https://discord.gg/bK6mRVpErU)
-[![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/ZylonPrivateGPT)](https://twitter.com/ZylonPrivateGPT)
+[![Website](https://img.shields.io/website?up_message=up&down_message=down&url=https%3A%2F%2Fgithub.com%2Fyoungsecurity%2Fai-privateZTGPT%2F&label=Young%20Security)](https://github.com/youngsecurity/ai-privateZTGPT)
+[![Discord](https://img.shields.io/discord/731607576483201076?logo=discord&label=Young%20Security)](https://discord.gg/yj3xbJM6Ye)
+[![X Follow](https://img.shields.io/twitter/follow/Y0UNGSECURITY)](https://twitter.com/Y0UNGSECURITY)
 
 
 > Install & usage docs: https://docs.privategpt.dev/
 > 
-> Join the community: [Twitter](https://twitter.com/PrivateGPT_AI) & [Discord](https://discord.gg/bK6mRVpErU)
+> Join the community: [Twitter](https://twitter.com/Y0UNGSECURITY) & [Discord](https://discord.gg/yj3xbJM6Ye)
 
 ![Gradio UI](/fern/docs/assets/ui.png?raw=true)
 
@@ -52,22 +51,7 @@ domains like healthcare or legal is limited by a clear concern: **privacy**.
 Not being able to ensure that your data is fully under your control when using third-party AI tools
 is a risk those industries cannot take.
 
-### Primordial version
-The first version of PrivateGPT was launched in May 2023 as a novel approach to address the privacy
-concerns by using LLMs in a complete offline way.
-
-That version, which rapidly became a go-to project for privacy-sensitive setups and served as the seed
-for thousands of local-focused generative AI projects, was the foundation of what PrivateGPT is becoming nowadays;
-thus a simpler and more educational implementation to understand the basic concepts required
-to build a fully local -and therefore, private- chatGPT-like tool.
-
-If you want to keep experimenting with it, we have saved it in the
-[primordial branch](https://github.com/imartinez/privateGPT/tree/primordial) of the project.
-
-> It is strongly recommended to do a clean clone and install of this new version of
-PrivateGPT if you come from the previous, primordial version.
-
-### Present and Future of PrivateGPT
+### Present and Future of Private Zero Trust GPT
 PrivateGPT is now evolving towards becoming a gateway to generative AI models and primitives, including
 completions, document ingestion, RAG pipelines and other low-level building blocks.
 We want to make it easier for any developer to build AI applications and experiences, as well as provide
