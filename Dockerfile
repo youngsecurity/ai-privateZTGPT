@@ -47,8 +47,7 @@ ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
 EXPOSE 8080
 
 # Prepare a non-root user "nonroot"
-#RUN adduser --system nonroot
-USER nonroot:nonroot
+USER nonroot
 WORKDIR /home/nonroot/app
 
 # Copy from dependencies
@@ -67,7 +66,7 @@ COPY --chown=nonroot fern/ fern
 COPY --chown=nonroot *.yaml *.md ./
 COPY --chown=nonroot scripts/ scripts
 
-RUN poetry run python3 scripts/setup 
+#RUN poetry run python3 scripts/setup 
 
 # Store versions in /VERSION
 #RUN touch /VERSION && \
@@ -158,7 +157,7 @@ VOLUME /home/nonroot/app/models
 #RUN chmod +x /docker-entrypoint.sh
 
 USER nonroot
-ENTRYPOINT python -m private_gpt
+#ENTRYPOINT python -m private_gpt
 #ENTRYPOINT ["/docker-entrypoint.sh"]
 
 
