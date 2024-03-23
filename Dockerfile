@@ -2,10 +2,6 @@
 FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev as base
 
 # Install poetry
-#RUN pip3 install pipx
-#RUN python3 -m pipx ensurepath
-RUN python3 -m pip ensurepath
-#RUN pipx install poetry
 RUN pip install --upgrade poetry
 ENV PATH="/home/nonroot/.local/bin:$PATH"
 ENV PATH=".venv/bin/:$PATH"
