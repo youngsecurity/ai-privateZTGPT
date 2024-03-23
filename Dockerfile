@@ -11,18 +11,13 @@ RUN pip install poetry --no-cache-dir
 # https://python-poetry.org/docs/configuration/#virtualenvsin-project
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 
-# Dependencies-Stage
 FROM base as dependencies
 
 WORKDIR /home/nonroot/app
 COPY pyproject.toml poetry.lock ./
 
-# Make sure you update Python version in path
-#COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
-
 RUN poetry install --no-cache --extras "ui llms-ollama embeddings-ollama embeddings-huggingface vector-stores-qdrant"
 
-# App-Stage
 FROM base as app
 
 ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
@@ -121,6 +116,4 @@ VOLUME /home/nonroot/app/models
 
 # Setup entrypoint
 COPY docker-entrypoint.sh /
-
-USER nonroot
 ENTRYPOINT ["bash", "/docker-entrypoint.sh"]
