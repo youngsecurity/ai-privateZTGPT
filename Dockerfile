@@ -121,9 +121,8 @@ VOLUME /home/nonroot/app/models
 
 # Setup entrypoint
 COPY docker-entrypoint.sh /
-RUN chmod +x /docker-entrypoint.sh
 
 USER nonroot
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["bash", "docker-entrypoint.sh"]
 
 
