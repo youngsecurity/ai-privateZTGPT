@@ -1,5 +1,6 @@
 #FROM python:3.11.6-slim-bookworm as base
-FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev AS base
+FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev 
+#AS base
 
 # Make sure you update Python version in path
 COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
@@ -16,7 +17,7 @@ ENV PATH=".venv/bin/:$PATH"
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 
 # Dependencies-Stage
-FROM base as dependencies
+#FROM base as dependencies
 
 WORKDIR /home/nonroot/app
 COPY pyproject.toml poetry.lock ./
@@ -36,7 +37,7 @@ RUN poetry install --extras "ui llms-ollama embeddings-ollama vector-stores-qdra
         tests*
 
 # App-Stage
-FROM base as app
+#FROM base as app
 LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
 LABEL description="Docker container for privateGPT - a production-ready AI project that allows you to ask questions about your documents using the power of Large Language Models (LLMs)."
 
