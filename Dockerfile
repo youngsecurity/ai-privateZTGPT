@@ -21,14 +21,6 @@ COPY pyproject.toml poetry.lock ./
 # Make sure you update Python version in path
 COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
 
-RUN mkdir -p local_data models/cache .config/matplotlib && \
-    chown -R nonroot:nogroup /home/nonroot/app 
-    #&& \
-    #pip install doc2text docx2txt EbookLib html2text python-pptx Pillow 
-    #&& \
-    #FORCE_CMAKE=1 CMAKE_ARGS="${CMAKE_ARGS}" \
-    #/home/nonroot/app/.venv/bin/pip install --force-reinstall --no-cache-dir llama-cpp-python
-
 RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant" && \
     poetry run python3 scripts/setup 
     #&& \
@@ -46,6 +38,14 @@ RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-s
 
 # App-Stage
 FROM base as app
+
+RUN mkdir -p local_data models/cache .config/matplotlib && \
+    chown -R nonroot:nogroup /home/nonroot/app 
+    #&& \
+    #pip install doc2text docx2txt EbookLib html2text python-pptx Pillow 
+    #&& \
+    #FORCE_CMAKE=1 CMAKE_ARGS="${CMAKE_ARGS}" \
+    #/home/nonroot/app/.venv/bin/pip install --force-reinstall --no-cache-dir llama-cpp-python
 
 # Copy from dependencies
 COPY --chown=nonroot --from=dependencies /home/nonroot/app/ ./
