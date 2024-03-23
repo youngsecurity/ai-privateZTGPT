@@ -7,7 +7,7 @@ LABEL description="Docker container for privateGPT - a production-ready AI proje
 # Install poetry
 ENV PATH="/home/nonroot/.local/bin:$PATH"
 ENV PATH=".venv/bin/:$PATH"
-RUN pip install --upgrade poetry
+RUN pip install poetry --no-cache-dir
 
 # https://python-poetry.org/docs/configuration/#virtualenvsin-project
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
@@ -21,7 +21,7 @@ COPY pyproject.toml poetry.lock ./
 # Make sure you update Python version in path
 COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
 
-RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama embeddings-huggingface vector-stores-qdrant" 
+RUN poetry install --no-cache --extras "ui llms-ollama embeddings-ollama embeddings-huggingface vector-stores-qdrant"
 
 # App-Stage
 FROM base as app
