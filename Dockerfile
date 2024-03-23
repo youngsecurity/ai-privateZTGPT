@@ -1,8 +1,8 @@
-#FROM python:3.11.6-slim-bookworm as builder
-FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev AS builder
+#FROM python:3.11.6-slim-bookworm as base
+FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev AS base
 
 # Make sure you update Python version in path
-COPY --from=builder /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
+COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
 
 # Install poetry
 RUN pip install pipx
@@ -15,13 +15,13 @@ ENV PATH=".venv/bin/:$PATH"
 # https://python-poetry.org/docs/configuration/#virtualenvsin-project
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 
-FROM builder as dependencies
+FROM base as dependencies
 WORKDIR /home/worker/app
 COPY pyproject.toml poetry.lock ./
 
 RUN poetry install --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant"
 
-FROM builder as app
+FROM base as app
 
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8080
