@@ -60,7 +60,7 @@ RUN mkdir models; chown nonroot models
     #&& \
     #FORCE_CMAKE=1 CMAKE_ARGS="${CMAKE_ARGS}" \
     #/home/nonroot/app/.venv/bin/pip install --force-reinstall --no-cache-dir llama-cpp-python
-COPY --chown=nonroot --from=dependencies /home/nonroot/app/.venv .venv
+COPY --chown=nonroot --from=dependencies /home/nonroot/app ./
 COPY --chown=nonroot private_gpt/ private_gpt
 COPY --chown=nonroot fern/ fern
 COPY --chown=nonroot *.yaml *.md ./
