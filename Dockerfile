@@ -157,7 +157,7 @@ VOLUME /home/nonroot/app/models
 #RUN chmod +x /docker-entrypoint.sh
 
 USER nonroot
-#ENTRYPOINT python -m private_gpt
+ENTRYPOINT python -m private_gpt
 #ENTRYPOINT ["/docker-entrypoint.sh"]
 
 

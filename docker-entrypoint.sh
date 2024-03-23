@@ -1,3 +1,3 @@
 #!/bin/bash
 
-ENTRYPOINT [ "python", "hello_wolfi.py" ]
+ENTRYPOINT [ "python", "-m private_gpt" ]
