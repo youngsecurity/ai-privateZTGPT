@@ -6,7 +6,7 @@ authors = ["Young Security <joe@youngsecurity.net>"]
 
 [tool.poetry.dependencies]
 #python = ">=3.11,<3.12"
-python = ">=3.11"
+python = ">=3.11,<4.0"
 # PrivateZTGPT
 fastapi = { extras = ["all"], version = "^0.110.0" }
 python-multipart = "^0.0.9"
