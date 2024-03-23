@@ -3,8 +3,6 @@ FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev as base
 LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
 LABEL description="Docker container for privateGPT - a production-ready AI project that allows you to ask questions about your documents using the power of Large Language Models (LLMs)."
 
-RUN apk add curl wget
-
 # Install poetry
 ENV PATH="/home/nonroot/.local/bin:$PATH"
 ENV PATH=".venv/bin/:$PATH"
