@@ -15,7 +15,8 @@ ENV PATH=".venv/bin/:$PATH"
 # https://python-poetry.org/docs/configuration/#virtualenvsin-project
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 
-FROM base AS dependencies
+# Dependencies-Stage
+FROM base as dependencies
 
 WORKDIR /home/nonroot/app
 COPY pyproject.toml poetry.lock ./
@@ -34,8 +35,8 @@ RUN poetry install --extras "ui llms-ollama embeddings-ollama vector-stores-qdra
         settings-* \
         tests*
 
-FROM base AS app
-
+# App-Stage
+FROM base as app
 LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
 LABEL description="Docker container for privateGPT - a production-ready AI project that allows you to ask questions about your documents using the power of Large Language Models (LLMs)."
 
