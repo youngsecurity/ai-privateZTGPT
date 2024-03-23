@@ -123,6 +123,4 @@ VOLUME /home/nonroot/app/models
 COPY docker-entrypoint.sh /
 
 USER nonroot
-ENTRYPOINT ["bash", "docker-entrypoint.sh"]
-
-
+ENTRYPOINT ["bash", "/docker-entrypoint.sh"]
