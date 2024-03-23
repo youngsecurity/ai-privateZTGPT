@@ -52,8 +52,10 @@ USER nonroot:nonroot
 WORKDIR /home/worker/app
 
 # Copy from dependencies
-RUN mkdir -p local_data models/cache .config/matplotlib && \
-    chown -R nonroot /home/nonroot/app 
+RUN mkdir local_data; chown nonroot local_data
+RUN mkdir models; chown nonroot models
+#RUN mkdir -p local_data models/cache .config/matplotlib && \
+#    chown -R nonroot /home/nonroot/app 
     #&& \
     #pip install doc2text docx2txt EbookLib html2text python-pptx Pillow 
     #&& \
