@@ -6,7 +6,7 @@ LABEL description="Docker container for privateGPT - a production-ready AI proje
 # Install poetry
 ENV PATH="/home/nonroot/.local/bin:$PATH"
 ENV PATH=".venv/bin/:$PATH"
-RUN pip install poetry --no-cache-dir
+RUN pip install poetry --no-cache-dir --user
 
 # https://python-poetry.org/docs/configuration/#virtualenvsin-project
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true

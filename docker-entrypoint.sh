@@ -7,5 +7,4 @@ set -e
 source /home/nonroot/app/.venv/bin/activate
 # run app
 export PGPT_PROFILES=ollama 
-make run
-#/home/nonroot/app/.venv/bin/python -m private_gpt
+/home/nonroot/app/.venv/bin/python -m private_gpt
