@@ -46,10 +46,10 @@ ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
     PYTHONUNBUFFERED=1
 EXPOSE 8080
 
-# Prepare a non-root user "worker"
+# Prepare a non-root user "nonroot"
 #RUN adduser --system nonroot
 USER nonroot:nonroot
-WORKDIR /home/worker/app
+WORKDIR /home/nonroot/app
 
 # Copy from dependencies
 RUN mkdir local_data; chown nonroot local_data
