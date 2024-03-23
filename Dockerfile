@@ -16,6 +16,7 @@ FROM base as dependencies
 WORKDIR /home/nonroot/app
 COPY pyproject.toml poetry.lock ./
 
+RUN apk add curl wget
 RUN poetry install --no-cache --extras "ui llms-ollama embeddings-ollama embeddings-huggingface vector-stores-qdrant"
 
 FROM base as app
