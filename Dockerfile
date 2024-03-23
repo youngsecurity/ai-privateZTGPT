@@ -1,4 +1,3 @@
-#FROM python:3.11.6-slim-bookworm as base
 FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev as base
 
 LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
@@ -26,9 +25,6 @@ RUN poetry install --no-cache --extras "ui llms-ollama embeddings-ollama embeddi
 # App-Stage
 FROM base as app
 
-#ARG CMAKE_ARGS='-DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR="OpenBLAS" -DLLAMA_AVX=OFF -DLLAMA_AVX2=OFF -DLLAMA_F16C=OFF -DLLAMA_FMA=OFF'
-ARG CMAKE_ARGS='-DLLAMA_CUBLAS=ON'
-
 ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
     HF_HOME="/home/nonroot/app/models/cache" \
     PYTHONUNBUFFERED=1
@@ -41,28 +37,11 @@ WORKDIR /home/nonroot/app
 # Copy from dependencies
 RUN mkdir local_data; chown nonroot local_data
 RUN mkdir models; chown nonroot models
-#RUN mkdir -p local_data models/cache .config/matplotlib && \
-#    chown -R nonroot /home/nonroot/app 
-    #&& \
-    #pip install doc2text docx2txt EbookLib html2text python-pptx Pillow 
-    #&& \
-    #FORCE_CMAKE=1 CMAKE_ARGS="${CMAKE_ARGS}" \
-    #/home/nonroot/app/.venv/bin/pip install --force-reinstall --no-cache-dir llama-cpp-python
 COPY --chown=nonroot --from=dependencies /home/nonroot/app ./
 COPY --chown=nonroot private_gpt/ private_gpt
 COPY --chown=nonroot fern/ fern
 COPY --chown=nonroot *.yaml *.md ./
 COPY --chown=nonroot scripts/ scripts
-
-#RUN poetry run python3 scripts/setup 
-
-# Store versions in /VERSION
-#RUN touch /VERSION && \
-#    echo "debian=$(cat /etc/issue | cut -d' ' -f3)" > /VERSION && \
-#    echo "python=$(/home/nonroot/app/.venv/bin/python3 --version | cut -d' ' -f2)" >> /VERSION && \
-#    echo "pip=$(/home/nonroot/app/.venv/bin/pip3 --version| cut -d' ' -f2)" >> /VERSION && \
-    #echo "llama-cpp-python=$(/home/nonroot/app/.venv/bin/pip3 freeze | grep llama_cpp_python | cut -d= -f3)" >> /VERSION && \
-#    echo "privategpt=$(cat /home/nonroot/app/version.txt)" >> /VERSION
 
 # Setup environment
 ENV PYTHONPATH="$PYTHONPATH:/private_gpt/" \
@@ -141,11 +120,10 @@ VOLUME /home/nonroot/app/local_data
 VOLUME /home/nonroot/app/models
 
 # Setup entrypoint
-#COPY docker-entrypoint.sh /
-#RUN chmod +x /docker-entrypoint.sh
+COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 
 USER nonroot
-ENTRYPOINT python -m private_gpt
-#ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 

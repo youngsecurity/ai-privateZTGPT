@@ -1,3 +1,5 @@
 #!/bin/bash
 
-ENTRYPOINT [ "python", "-m private_gpt" ]
+poetry run python /home/nonroot/app/scripts/setup 
+#ENTRYPOINT [ "python", "-m private_gpt" ]
+python -m -private_gpt
