@@ -18,7 +18,7 @@ COPY pyproject.toml poetry.lock ./
 # Make sure you update Python version in path
 COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
 
-RUN poetry install --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant" && \
+RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant" && \
     poetry run python scripts/setup && \
     rm -rf \
         .git* \
