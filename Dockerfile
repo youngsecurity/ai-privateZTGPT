@@ -153,11 +153,11 @@ VOLUME /home/nonroot/app/local_data
 VOLUME /home/nonroot/app/models
 
 # Setup entrypoint
-COPY docker-entrypoint.sh /
-RUN chmod +x /docker-entrypoint.sh
+#COPY docker-entrypoint.sh /
+#RUN chmod +x /docker-entrypoint.sh
 
 USER nonroot
-#ENTRYPOINT python -m private_gpt
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT python -m private_gpt
+#ENTRYPOINT ["/docker-entrypoint.sh"]
 
 
