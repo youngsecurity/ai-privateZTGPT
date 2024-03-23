@@ -1,8 +1,8 @@
-FROM python:3.11.6-slim-bookworm as base
-#FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev as base
+#FROM python:3.11.6-slim-bookworm as base
+FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev as base
 
 # Make sure you update Python version in path
-COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
+#COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
 
 # Install poetry
 RUN pip install pipx
