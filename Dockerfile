@@ -47,7 +47,7 @@ ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
 EXPOSE 8080
 
 # Prepare a non-root user
-RUN adduser --system nonroot
+#RUN adduser --system nonroot
 WORKDIR /home/nonroot/app
 
 # Copy from dependencies
