@@ -39,6 +39,19 @@ RUN poetry install --no-root --extras "ui llms-ollama embeddings-ollama vector-s
 # App-Stage
 FROM base as app
 
+#ARG CMAKE_ARGS='-DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR="OpenBLAS" -DLLAMA_AVX=OFF -DLLAMA_AVX2=OFF -DLLAMA_F16C=OFF -DLLAMA_FMA=OFF'
+ARG CMAKE_ARGS='-DLLAMA_CUBLAS=ON'
+
+ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
+    HF_HOME="/home/nonroot/app/models/cache" \
+    PYTHONUNBUFFERED=1
+EXPOSE 8080
+
+# Prepare a non-root user "worker"
+#RUN adduser --system nonroot
+USER nonroot:nonroot
+WORKDIR /home/worker/app
+
 # Copy from dependencies
 RUN mkdir local_data; chown nonroot local_data
 RUN mkdir models; chown nonroot models
@@ -58,13 +71,7 @@ COPY --chown=nonroot scripts/ scripts
 
 WORKDIR /home/nonroot/app
 
-#ARG CMAKE_ARGS='-DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR="OpenBLAS" -DLLAMA_AVX=OFF -DLLAMA_AVX2=OFF -DLLAMA_F16C=OFF -DLLAMA_FMA=OFF'
-ARG CMAKE_ARGS='-DLLAMA_CUBLAS=ON'
 
-ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
-    HF_HOME="/home/nonroot/app/models/cache" \
-    PYTHONUNBUFFERED=1
-EXPOSE 8080
 
 # Store versions in /VERSION
 #RUN touch /VERSION && \
