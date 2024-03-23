@@ -18,7 +18,7 @@ WORKDIR /home/nonroot/app
 COPY pyproject.toml poetry.lock ./
 
 # Make sure you update Python version in path
-COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
+#COPY --from=base /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
 
 RUN poetry install --no-cache --extras "ui llms-ollama embeddings-ollama embeddings-huggingface vector-stores-qdrant"
 
