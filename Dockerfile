@@ -3,11 +3,11 @@ FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev as base
 LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
 LABEL description="Docker container for Private Zero Trust GPT - a production-ready AI project that allows you to ask questions about your cybersecurity and organization corpus using the power of Large Language Models (LLMs)."
 
+ENV PATH="/home/nonroot/.local/bin:$PATH"
+ENV PATH=".venv/bin/:$PATH"
 RUN pip install --no-cache-dir --user pipx
 RUN python3 -m pipx ensurepath
 RUN pipx install poetry
-ENV PATH="/home/nonroot/.local/bin:$PATH"
-ENV PATH=".venv/bin/:$PATH"
 
 # https://python-poetry.org/docs/configuration/#virtualenvsin-project
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
