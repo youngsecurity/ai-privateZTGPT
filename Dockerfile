@@ -15,7 +15,7 @@ FROM base as dependencies
 
 WORKDIR /home/nonroot/app
 COPY pyproject.toml poetry.lock ./
-RUN poetry run pip install doc2text docx2txt EbookLib html2text python-pptx Pillow --no-cache-dir --user && \
+RUN poetry run pip install doc2text docx2txt EbookLib html2text python-pptx Pillow --no-cache-dir && \
     poetry install --no-cache --extras "ui llms-ollama embeddings-ollama embeddings-huggingface vector-stores-qdrant"
 
 FROM base as app
