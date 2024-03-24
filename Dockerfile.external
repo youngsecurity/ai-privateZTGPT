@@ -18,8 +18,10 @@ RUN poetry install --extras "ui llms-ollama embeddings-ollama vector-stores-qdra
 
 FROM base as app
 
-ENV PYTHONUNBUFFERED=1
-ENV PORT=8080
+ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
+    HF_HOME="/home/nonroot/app/models/cache" \
+    PYTHONUNBUFFERED=1 \
+    PORT=8080
 EXPOSE 8080
 
 # Prepare a non-root user

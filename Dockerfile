@@ -22,7 +22,8 @@ FROM base as app
 
 ENV MPLCONFIGDIR="/home/nonroot/app/models/.config/matplotlib" \
     HF_HOME="/home/nonroot/app/models/cache" \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PORT=8080
 EXPOSE 8080
 
 # Prepare a non-root user "nonroot"
@@ -30,8 +31,9 @@ USER nonroot
 WORKDIR /home/nonroot/app
 
 # Copy from dependencies
-RUN mkdir local_data; chown nonroot local_data
-RUN mkdir models; chown nonroot models
+#RUN mkdir local_data; chown nonroot local_data
+#RUN mkdir models; chown nonroot models
+RUN mkdir local_data && chown nonroot local_data; mkdir models && chown nonroot models
 RUN poetry run pip install doc2text docx2txt EbookLib html2text python-pptx Pillow
 COPY --chown=worker --from=dependencies /home/worker/app/.venv/ .venv
 COPY --chown=nonroot private_gpt/ private_gpt
@@ -46,5 +48,6 @@ VOLUME /home/nonroot/app/local_data
 VOLUME /home/nonroot/app/models
 
 # Setup entrypoint
-COPY docker-entrypoint.sh /
-ENTRYPOINT ["bash", "/docker-entrypoint.sh"]
+#COPY docker-entrypoint.sh /
+#ENTRYPOINT ["bash", "/docker-entrypoint.sh"]
+ENTRYPOINT export PGPT_PROFILES=ollama && python -m private_gpt
