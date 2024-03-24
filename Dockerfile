@@ -39,4 +39,4 @@ COPY --chown=nonroot private_gpt/ private_gpt fern/ fern *.yaml *.md ./ scripts/
 ENV PYTHONPATH="$PYTHONPATH:/private_gpt/"
 
 USER nonroot
-ENTRYPOINT export PGPT_PROFILES=ollama && python -m private_gpt
+ENTRYPOINT ["/bin/sh" "-c" "export PGPT_PROFILES=ollama && python -m private_gpt"]
