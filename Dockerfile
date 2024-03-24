@@ -15,8 +15,8 @@ FROM base as dependencies
 
 WORKDIR /home/nonroot/app
 COPY pyproject.toml poetry.lock ./
-
-RUN poetry install --no-cache --extras "ui llms-ollama embeddings-ollama embeddings-huggingface vector-stores-qdrant"
+RUN poetry run pip install doc2text docx2txt EbookLib html2text python-pptx Pillow && \
+    poetry install --no-cache --extras "ui llms-ollama embeddings-ollama embeddings-huggingface vector-stores-qdrant"
 
 FROM base as app
 
@@ -32,7 +32,7 @@ WORKDIR /home/nonroot/app
 
 # Copy from dependencies
 RUN mkdir local_data && chown nonroot local_data; mkdir models && chown nonroot models
-RUN poetry run pip install doc2text docx2txt EbookLib html2text python-pptx Pillow
+
 COPY --chown=worker --from=dependencies /home/nonroot/app/.venv/ .venv
 COPY --chown=nonroot private_gpt/ private_gpt
 COPY --chown=nonroot fern/ fern
