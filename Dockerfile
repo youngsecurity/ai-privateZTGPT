@@ -5,7 +5,10 @@ LABEL description="Docker container for Private Zero Trust GPT - a production-re
 
 ENV PATH="/home/nonroot/.local/bin:$PATH"
 ENV PATH=".venv/bin/:$PATH"
-RUN pip install poetry --no-cache-dir --user
+#RUN pip install poetry --no-cache-dir --user
+RUN pip install pipx --no-cache-dir --user
+RUN python3 -m pipx ensurepath
+RUN pipx install poetry --no-cache-dir --user
 
 # https://python-poetry.org/docs/configuration/#virtualenvsin-project
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
