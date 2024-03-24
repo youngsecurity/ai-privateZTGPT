@@ -33,7 +33,7 @@ WORKDIR /home/nonroot/app
 # Copy from dependencies
 RUN mkdir local_data && chown nonroot local_data; mkdir models && chown nonroot models
 RUN poetry run pip install doc2text docx2txt EbookLib html2text python-pptx Pillow
-COPY --chown=worker --from=dependencies /home/worker/app/.venv/ .venv
+COPY --chown=worker --from=dependencies /home/nonroot/app/.venv/ .venv
 COPY --chown=nonroot private_gpt/ private_gpt
 COPY --chown=nonroot fern/ fern
 COPY --chown=nonroot *.yaml *.md ./
