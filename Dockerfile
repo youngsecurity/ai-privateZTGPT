@@ -3,12 +3,11 @@ FROM --platform=linux/amd64 cgr.dev/chainguard/python:latest-dev as base
 LABEL maintainer="Joseph Young <joe@youngsecurity.net>"
 LABEL description="Docker container for Private Zero Trust GPT - a production-ready AI project that allows you to ask questions about your cybersecurity and organization corpus using the power of Large Language Models (LLMs)."
 
-ENV PATH="/home/nonroot/.local/bin:$PATH"
-ENV PATH=".venv/bin/:$PATH"
-#RUN pip install poetry --no-cache-dir --user
 RUN pip install --no-cache-dir --user pipx
 RUN python3 -m pipx ensurepath
 RUN pipx install poetry
+ENV PATH="/home/nonroot/.local/bin:$PATH"
+ENV PATH=".venv/bin/:$PATH"
 
 # https://python-poetry.org/docs/configuration/#virtualenvsin-project
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
@@ -34,11 +33,8 @@ WORKDIR /home/nonroot/app
 
 # Copy from dependencies
 RUN mkdir local_data && chown nonroot local_data; mkdir models && chown nonroot models
-COPY --chown=nonroot --from=dependencies /home/nonroot/app/.venv/ .venv
-COPY --chown=nonroot private_gpt/ private_gpt
-COPY --chown=nonroot fern/ fern
-COPY --chown=nonroot *.yaml *.md ./
-COPY --chown=nonroot scripts/ scripts
+COPY --chown=nonroot /home/nonroot/app/.venv/ .venv
+COPY --chown=nonroot private_gpt/ private_gpt fern/ fern *.yaml *.md ./ scripts/
 
 ENV PYTHONPATH="$PYTHONPATH:/private_gpt/"
 
