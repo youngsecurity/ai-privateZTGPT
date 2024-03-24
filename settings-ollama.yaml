@@ -11,7 +11,7 @@ embedding:
   mode: ollama
 
 ollama:
-  llm_model: openchat:7b-V3.5-q8_0
+  llm_model: openchat:7b-v3.5-q8_0
   embedding_model: nomic-embed-text
   api_base: http://ollama:11434
   tfs_z: 1.0              # Tail free sampling is used to reduce the impact of less probable tokens from the output. A higher value (e.g., 2.0) will reduce the impact more, while a value of 1.0 disables this setting.
