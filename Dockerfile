@@ -32,7 +32,7 @@ WORKDIR /home/nonroot/app
 
 # Copy from dependencies
 RUN mkdir local_data && chown nonroot local_data; mkdir models && chown nonroot models
-COPY --chown=worker --from=dependencies /home/nonroot/app/.venv/ .venv
+COPY --chown=nonroot --from=dependencies /home/nonroot/app/.venv/ .venv
 COPY --chown=nonroot private_gpt/ private_gpt
 COPY --chown=nonroot fern/ fern
 COPY --chown=nonroot *.yaml *.md ./
